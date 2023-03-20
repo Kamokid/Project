@@ -20,7 +20,7 @@ class Solitaire:
         self.text_surface = font.render("Hello", True, (0, 0, 0))  # Render the text to a surface
 
         # self.card = Card(self, "Club", "2")
-        self.card = Card(Suits.CLUB.name, 2)
+        self.card = Card(Suits.CLUB, 2)
         self.card.image = pygame.transform.scale(self.card.image, (74, 103))
 
         # Define the rectangle's size and color
