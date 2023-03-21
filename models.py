@@ -25,7 +25,19 @@ class Card:
         self.suit = suit
         self.value = value
         self.image = pygame.image.load('images/'+ self.suit.name +'-'+ str(self.value)+'.svg')
-        # self.image = pygame.image.load('images/CLUB-1.svg')
+        self.color = None
+        self.set_color()
+
+    def set_color(self):
+        color_map = {
+            "CLUB": lambda: "BLACK",
+            "DIAMOND": lambda: "RED",
+            "SPADE": lambda: "BLACK",
+            "HEART": lambda: "RED"
+        }
+        self.color = color_map.get(self.suit.name, lambda: None)()
+
+
 
         # """Initialize the card and set its starting position."""
         # self.screen = sol_game.screen
@@ -72,6 +84,9 @@ class Stock:
     def popTop(self):
         self.cards.pop(-1)
 
+    def firstDealStock(self, deck):
+        self.cards.append(deck.deal())
+
 class Talon:
     """A class to manage the talon."""
     def __init__(self):
@@ -79,9 +94,18 @@ class Talon:
     
     def add(self, card):
         self.cards.append(card)
+
+    def moveTop(self):
+        self.cards.pop(-1)
     
     def removeAll(self):
         return self.cards
+    
+    def showCard(self):
+        if (len(self.cards) > 0):
+            return self.cards[-1]
+        else:
+             return None
     
 class Foundation:
     """A class to manage the foundation."""
@@ -93,6 +117,12 @@ class Foundation:
     
     def moveTop(self):
         self.cards.pop(-1)
+    
+    def showCard(self):
+        if (len(self.cards) > 0):
+            return self.cards[-1]
+        else:
+             return None
 
 class Tableau:
     """A class to manage the Tableau."""
@@ -105,3 +135,11 @@ class Tableau:
     def moveTop(self):
         self.cards.pop(-1)
     
+    def showCard(self):
+        if (len(self.cards) > 0):
+            return self.cards[-1]
+        else:
+             return None
+    
+    def firstDealTableau(self, deck):
+        self.cards.append(deck.deal())
