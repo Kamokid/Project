@@ -1,6 +1,7 @@
 import sys, pygame
 from settings import Settings
 from models import Card, Suits
+from engine import GameEngine
 
 class Solitaire:
     """Overall class to manage game assets and behavior."""
@@ -13,6 +14,9 @@ class Solitaire:
         self.screen = pygame.display.set_mode(
             (self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption("Solitaire")
+
+        self.gameEngine = GameEngine()
+
         self.cardBack = pygame.image.load('images/card_back.png')
         # self.cardBack = pygame.transform.scale(self.cardBack, (int(238*0.4), int(332*0.4)))
 
@@ -48,40 +52,40 @@ class Solitaire:
         self.rect3.top = 50
         self.rect3.left = self.rect2.right + 25  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect4 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect4.top = 200
-        self.rect4.left = 50  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect4 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect4.top = 200
+        # self.rect4.left = 50  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect5 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect5.top = 200
-        self.rect5.left = self.rect4.right + 25  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect5 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect5.top = 200
+        # self.rect5.left = self.rect4.right + 25  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect6 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect6.top = 200
-        self.rect6.left = self.rect5.right + 25  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect6 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect6.top = 200
+        # self.rect6.left = self.rect5.right + 25  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect7 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect7.top = 200
-        self.rect7.left = self.rect6.right + 25 # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect7 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect7.top = 200
+        # self.rect7.left = self.rect6.right + 25 # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect8 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect8.top = 200
-        self.rect8.left = self.rect7.right + 25  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect8 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect8.top = 200
+        # self.rect8.left = self.rect7.right + 25  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect9 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect9.top = 200
-        self.rect9.left = self.rect8.right + 25  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect9 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect9.top = 200
+        # self.rect9.left = self.rect8.right + 25  # Adjust the x-coordinate as desired
 
-        # # Create a pygame.Rect object representing the rectangle
-        self.rect10 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
-        self.rect10.top = 200
-        self.rect10.left = self.rect9.right + 25  # Adjust the x-coordinate as desired
+        # # # Create a pygame.Rect object representing the rectangle
+        # self.rect10 = pygame.Rect(0, 0, self.rect_width, self.rect_height)
+        # self.rect10.top = 200
+        # self.rect10.left = self.rect9.right + 25  # Adjust the x-coordinate as desired
 
         
   
@@ -93,7 +97,7 @@ class Solitaire:
             self._update_screen()
 
         # Make the most recently drawn screen visible.
-            pygame.display.flip()
+            pygame.display.update()
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
@@ -113,32 +117,56 @@ class Solitaire:
         self.screen.fill(self.settings.bg_color)
         self.screen.blit(self.cardBack, (50, 50))
         self.screen.blit(self.card.image, (146, 50))
+
+        
         
         # # Draw a filled rectangle with the background color
         pygame.draw.rect(self.screen, self.settings.bg_color, self.rect)
         pygame.draw.rect(self.screen, self.settings.bg_color, self.rect1)
         pygame.draw.rect(self.screen, self.settings.bg_color, self.rect2)
         pygame.draw.rect(self.screen, self.settings.bg_color, self.rect3)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect4)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect5)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect6)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect7)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect8)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect9)
-        pygame.draw.rect(self.screen, self.settings.bg_color, self.rect10)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect4)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect5)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect6)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect7)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect8)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect9)
+        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect10)
 
         # # Draw a rectangle with a black boundary on top of the filled rectangle
         pygame.draw.rect(self.screen, self.rect_color, self.rect, 3)
         pygame.draw.rect(self.screen, self.rect_color, self.rect1, 3)
         pygame.draw.rect(self.screen, self.rect_color, self.rect2, 3)
         pygame.draw.rect(self.screen, self.rect_color, self.rect3, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect4, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect5, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect6, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect7, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect8, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect9, 3)
-        pygame.draw.rect(self.screen, self.rect_color, self.rect10, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect4, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect5, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect6, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect7, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect8, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect9, 3)
+        # pygame.draw.rect(self.screen, self.rect_color, self.rect10, 3)
+
+
+        tableauCard1 = self.gameEngine.tableau1.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard1.image, (74, 103)), (50,200))
+
+        tableauCard2 = self.gameEngine.tableau2.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard2.image, (74, 103)), (150,200))
+
+        tableauCard3 = self.gameEngine.tableau3.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard3.image, (74, 103)), (250,200))
+
+        tableauCard4 = self.gameEngine.tableau4.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard4.image, (74, 103)), (350,200))
+
+        tableauCard5 = self.gameEngine.tableau5.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard5.image, (74, 103)), (450,200))
+
+        tableauCard6 = self.gameEngine.tableau6.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard6.image, (74, 103)), (550,200))
+
+        tableauCard7 = self.gameEngine.tableau7.showCard()
+        self.screen.blit(pygame.transform.scale(tableauCard7.image, (74, 103)), (650,200))
 
         # self.card.blitme()
 
