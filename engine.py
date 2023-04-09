@@ -5,23 +5,54 @@ from models import *
 class GameEngine:
     """ Game engine to coordinate the interactions between the models """
     def __init__(self):
+        # """ Initialize GameEngine settings """
+        # self.all_sprites = pygame.sprite.Group()
+        # self.deck_sprites = pygame.sprite.Group()
+        # self.stock_sprites = pygame.sprite.Group()
+        # self.talon_sprites = pygame.sprite.Group()
+        # self.foundation_sprites = pygame.sprite.Group()
+        # self.tableau_sprites = pygame.sprite.Group()
+
         """ Initialize GameEngine settings """
         self.deck = Deck()
+        if self.deck:
+            for card in self.deck.cards:
+                print(card.value)
+        else:
+            print("No more cards in deck!")
         self.deck.shuffle()
+
+        # for card in self.deck.cards:
+        #     card_sprite = Card(card.suit, card.value)
+        #     self.all_sprites.add(card_sprite)
+        #     self.deck_sprites.add(card_sprite)
+
         self.stock = Stock()
         self.talon = Talon()
-        self.foundation1 = Foundation()
-        self.foundation2 = Foundation()
-        self.foundation3 = Foundation()
-        self.foundation4 = Foundation()
-        self.tableau1 = Tableau()
-        self.tableau2 = Tableau()
-        self.tableau3 = Tableau()
-        self.tableau4 = Tableau()
-        self.tableau5 = Tableau()
-        self.tableau6 = Tableau()
-        self.tableau7 = Tableau()
+        self.foundation1 = Foundation(420,50)
+        self.foundation2 = Foundation(494, 50)
+        self.foundation3 = Foundation(568, 50)
+        self.foundation4 = Foundation(642, 50)
+        self.tableau1 = Tableau(50,200)
+        self.tableau2 = Tableau(150,200)
+        self.tableau3 = Tableau(250,200)
+        self.tableau4 = Tableau(350,200)
+        self.tableau5 = Tableau(450,200)
+        self.tableau6 = Tableau(550,200)
+        self.tableau7 = Tableau(650,200)
         self.deal()
+        
+        # self.all_sprites.add(self.stock, self.talon, self.foundation1, self.foundation2, 
+        #                      self.foundation3, self.foundation4, self.tableau1, self.tableau2, 
+        #                      self.tableau3, self.tableau4, self.tableau5, self.tableau6, self.tableau7)
+        
+        # self.stock_sprites.add(self.stock)
+        # self.talon_sprites.add(self.talon)
+        # self.foundation_sprites.add(self.foundation1, self.foundation2, self.foundation3, self.foundation4)
+        # self.tableau_sprites.add(self.tableau1, self.tableau2, self.tableau3, self.tableau4, self.tableau5, 
+        #                          self.tableau6, self.tableau7)
+
+        
     
     def deal(self):
         # initial = self.deck.length()
@@ -42,6 +73,13 @@ class GameEngine:
             self.tableau6.firstDealTableau(self.deck) 
         for i in range(7):
             self.tableau7.firstDealTableau(self.deck)  
+
+    # def update(self):
+    #     self.all_sprites.update()
+    #     self.stock_sprites.update()
+    #     self.talon_sprites.update()
+    #     self.foundation_sprites.update()
+    #     self.tableau_sprites.update()
     
     def addToTableau(self, click):
         # Check if the top card of the talon can be added to tableau1
@@ -411,11 +449,24 @@ class GameEngine:
                     if tableau[-1].value - self.foundation4[-1].value == 1:  
                         self.foundation4.add(tableau.moveTop())
 
-    def emptyStock(self):
+    def returnCardsToStock(self):
         # Check if the stock is empty
-        if self.stock:
-            self.stock = self.talon.removeAll()
+        cards = self.talon.removeAll()
+        # if cards:
+        #     for card in cards:
+        #         print(card.value)
+        # else:
+        #     print("No more cards in deck!")
+        cards.reverse()
+        for card in cards:
+            self.stock.addToStock(card) 
+            self.stock.add(card)
 
-    def addToTalon(self,click):
+    def addToTalon(self):
         # Add last card in stock to talon
-        self.talon.add(self.stock.popTop())
+        card = self.stock.popTop()
+        if card:
+            self.talon.addToTalon(card)
+            self.talon.add(card)
+        else:
+            self.returnCardsToStock()
