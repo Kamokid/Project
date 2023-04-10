@@ -15,24 +15,19 @@ class GameEngine:
 
         """ Initialize GameEngine settings """
         self.deck = Deck()
-        if self.deck:
-            for card in self.deck.cards:
-                print(card.value)
-        else:
-            print("No more cards in deck!")
+        # if self.deck:
+        #     for card in self.deck.cards:
+        #         print(card.value)
+        # else:
+        #     print("No more cards in deck!")
         self.deck.shuffle()
-
-        # for card in self.deck.cards:
-        #     card_sprite = Card(card.suit, card.value)
-        #     self.all_sprites.add(card_sprite)
-        #     self.deck_sprites.add(card_sprite)
 
         self.stock = Stock()
         self.talon = Talon()
-        self.foundation1 = Foundation(420,50)
-        self.foundation2 = Foundation(494, 50)
-        self.foundation3 = Foundation(568, 50)
-        self.foundation4 = Foundation(642, 50)
+        self.foundation1 = Foundation(350,50)
+        self.foundation2 = Foundation(450, 50)
+        self.foundation3 = Foundation(550, 50)
+        self.foundation4 = Foundation(650, 50)
         self.tableau1 = Tableau(50,200)
         self.tableau2 = Tableau(150,200)
         self.tableau3 = Tableau(250,200)
@@ -41,18 +36,6 @@ class GameEngine:
         self.tableau6 = Tableau(550,200)
         self.tableau7 = Tableau(650,200)
         self.deal()
-        
-        # self.all_sprites.add(self.stock, self.talon, self.foundation1, self.foundation2, 
-        #                      self.foundation3, self.foundation4, self.tableau1, self.tableau2, 
-        #                      self.tableau3, self.tableau4, self.tableau5, self.tableau6, self.tableau7)
-        
-        # self.stock_sprites.add(self.stock)
-        # self.talon_sprites.add(self.talon)
-        # self.foundation_sprites.add(self.foundation1, self.foundation2, self.foundation3, self.foundation4)
-        # self.tableau_sprites.add(self.tableau1, self.tableau2, self.tableau3, self.tableau4, self.tableau5, 
-        #                          self.tableau6, self.tableau7)
-
-        
     
     def deal(self):
         # initial = self.deck.length()
