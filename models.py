@@ -138,7 +138,7 @@ class Stock(pygame.sprite.Group):
             if (pressed_keys[0] and self.clicked == False):
                 self.clicked = True
                 action = True
-                # print("clicked")
+                print("clicked")
 
         pressed_keys = pygame.mouse.get_pressed()
         if (not pressed_keys[0]):
@@ -153,9 +153,8 @@ class Talon(pygame.sprite.Group):
         self.cards = []
         self.x = 146
         self.y = 50
-        # self.rect = pygame.Rect(self.x, self.y, CARD_WIDTH, CARD_HEIGHT)
         self.clicked = False
-        # self.card = None
+        self.clicked_card = None
     
     def is_empty(self):
         return len(self.cards) == 0
@@ -164,7 +163,6 @@ class Talon(pygame.sprite.Group):
         card.rect.x = self.x
         card.rect.y = self.y
         self.cards.append(card)
-        # self.card = card
 
     def moveTop(self):
         if self.is_empty():
@@ -193,6 +191,7 @@ class Talon(pygame.sprite.Group):
             # card.rect.y = self.y + self.spacing * i
 
     def draw(self, surface):
+        
         """Draw all the cards in the talon."""
         for card in (self.sprites()):
             surface.blit(card.image, card.rect)
@@ -245,8 +244,6 @@ class Talon(pygame.sprite.Group):
 
         # return action
 
-        
-
 class Tableau(pygame.sprite.Group):
     """A class to manage the Tableau."""
     def __init__(self,x,y):
@@ -255,6 +252,9 @@ class Tableau(pygame.sprite.Group):
         self.cards = []
         self.x = x
         self.y = y
+        self.rect_color = (128, 128, 128)
+        self.clicked = False
+        self.clicked_card = None
     
     def is_empty(self):
         return len(self.cards) == 0
@@ -263,6 +263,7 @@ class Tableau(pygame.sprite.Group):
         card.rect.x = self.x
         card.rect.y = self.y
         self.cards.append(card)
+        super().add(card)
 
     def moveTop(self):
         if self.is_empty():
@@ -270,6 +271,25 @@ class Tableau(pygame.sprite.Group):
         card = self.cards.pop()
         super().remove(card)
         return card
+    
+    def can_add_card(self, card):
+        
+        # Check if the tableau is empty
+        if self.is_empty():
+            if card.value == 13:
+                return True
+            else:
+                return False      
+        else:
+            # Check if the cards have different colors
+            if card.color != self.cards[-1].color:
+               # Check if the card is lesser than the last card by 1
+               if card.value - self.cards[-1].value == -1:
+                    return True   
+               else:
+                    return False       
+            else:
+                return False
     
     def showCard(self):
         if (len(self.cards) > 0):
@@ -290,6 +310,38 @@ class Tableau(pygame.sprite.Group):
             card.rect.x = self.x
             card.rect.y = self.y
             # card.rect.y = self.y + self.spacing * i
+
+    def draw(self, surface):
+
+         #Check if stock is empty
+        if self.is_empty():
+            pygame.draw.rect(surface, (0, 128, 0), self.rect)
+            pygame.draw.rect(surface, self.rect_color, self.rect, 3)
+        else:
+            """Draw all the cards in the talon."""
+            for card in self.sprites():
+                surface.blit(card.image, card.rect)
+
+            # Check if the card is clicked
+            if self.clicked_card == card:
+                # Move the card to the mouse position
+                mouse_pos = pygame.mouse.get_pos()
+                card.rect.center = mouse_pos
+        
+        # Check if the left mouse button is pressed
+        if pygame.mouse.get_pressed()[0]:
+            # Check if the mouse is over a card in the talon
+            for card in reversed(self.sprites()):
+                if card.rect.collidepoint(pygame.mouse.get_pos()):
+                    self.clicked_card = card
+                    break
+        
+        # Check if the left mouse button is released
+        if not pygame.mouse.get_pressed()[0]:
+            self.clicked_card = None
+            self.updateTableau()
+
+        return self.clicked_card
     
 class Foundation(pygame.sprite.Group):
     """A class to manage the foundation."""
@@ -301,6 +353,7 @@ class Foundation(pygame.sprite.Group):
         self.y = y
         self.rect_color = (128, 128, 128)
         self.clicked = False
+        self.clicked_card = None
 
     def is_empty(self):
         return len(self.cards) == 0
@@ -353,7 +406,7 @@ class Foundation(pygame.sprite.Group):
 
     def draw(self, surface):
 
-         #Check if stock is empty
+        #Check if stock is empty
         if self.is_empty():
             pygame.draw.rect(surface, (0, 128, 0), self.rect)
             pygame.draw.rect(surface, self.rect_color, self.rect, 3)

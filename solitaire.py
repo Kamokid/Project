@@ -60,7 +60,7 @@ class Solitaire:
            
         # Make the most recently drawn screen visible.
             pygame.display.flip()
-            self.clock.tick(222)
+            self.clock.tick(60)
 
     def _check_events(self):
         """Respond to keypresses and mouse events."""
@@ -90,51 +90,22 @@ class Solitaire:
         self.gameEngine.foundation2.draw(self.screen)
         self.gameEngine.foundation3.draw(self.screen)
         self.gameEngine.foundation4.draw(self.screen)
+        self.gameEngine.tableau1.draw(self.screen)
+        self.gameEngine.tableau2.draw(self.screen)
+        self.gameEngine.tableau3.draw(self.screen)
+        self.gameEngine.tableau4.draw(self.screen)
+        self.gameEngine.tableau5.draw(self.screen)
+        self.gameEngine.tableau6.draw(self.screen)
+        self.gameEngine.tableau7.draw(self.screen)
+
+
         if self.gameEngine.talon.draw(self.screen):
             card = self.gameEngine.talon.draw(self.screen)
-            self._add_foundation(card)
+            self._talon_to_foundation(card)
+            self._talon_to_tableau(card)
             
-        # self.gameEngine.talon.updateTalon()
 
-        
-        # # Draw a filled rectangle with the background color
-        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect)
-        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect1)
-        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect2)
-        # pygame.draw.rect(self.screen, self.settings.bg_color, self.rect3)
-
-
-        # # Draw a rectangle with a black boundary on top of the filled rectangle
-        # pygame.draw.rect(self.screen, self.rect_color, self.rect, 3)
-        # pygame.draw.rect(self.screen, self.rect_color, self.rect1, 3)
-        # pygame.draw.rect(self.screen, self.rect_color, self.rect2, 3)
-        # pygame.draw.rect(self.screen, self.rect_color, self.rect3, 3)
-
-
-
-
-        tableauCard1 = self.gameEngine.tableau1.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard1.image, (74, 103)), (50,200))
-
-        tableauCard2 = self.gameEngine.tableau2.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard2.image, (74, 103)), (150,200))
-
-        tableauCard3 = self.gameEngine.tableau3.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard3.image, (74, 103)), (250,200))
-
-        tableauCard4 = self.gameEngine.tableau4.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard4.image, (74, 103)), (350,200))
-
-        tableauCard5 = self.gameEngine.tableau5.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard5.image, (74, 103)), (450,200))
-
-        tableauCard6 = self.gameEngine.tableau6.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard6.image, (74, 103)), (550,200))
-
-        tableauCard7 = self.gameEngine.tableau7.showCard()
-        self.screen.blit(pygame.transform.scale(tableauCard7.image, (74, 103)), (650,200))
-
-    def _add_foundation(self, card):
+    def _talon_to_foundation(self, card):
         if card.rect.colliderect(self.gameEngine.foundation1):
                  if self.gameEngine.foundation1.can_add_card(card):
                     cardf=self.gameEngine.talon.moveTop()
@@ -155,6 +126,43 @@ class Solitaire:
                     cardf=self.gameEngine.talon.moveTop()
                     if cardf:
                         self.gameEngine.foundation4.addToFoundation(cardf)
+
+    def _talon_to_tableau(self, card):
+        if card.rect.colliderect(self.gameEngine.tableau1):
+                if self.gameEngine.tableau1.can_add_card(card):
+                    cardf = self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau1.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau2):
+                if self.gameEngine.tableau2.can_add_card(card):
+                    cardf = self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau2.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau3):
+                if self.gameEngine.tableau3.can_add_card(card):
+                    cardf=self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau3.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau4):
+                if self.gameEngine.tableau4.can_add_card(card):
+                    cardf=self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau4.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau5):
+                 if self.gameEngine.tableau5.can_add_card(card):
+                    cardf=self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau5.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau6):
+                 if self.gameEngine.tableau6.can_add_card(card):
+                    cardf=self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau6.addToTableau(cardf)
+        if card.rect.colliderect(self.gameEngine.tableau7):
+                 if self.gameEngine.tableau7.can_add_card(card):
+                    cardf=self.gameEngine.talon.moveTop()
+                    if cardf:
+                        self.gameEngine.tableau7.addToTableau(cardf)
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
