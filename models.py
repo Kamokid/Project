@@ -14,7 +14,6 @@ class Suits(Enum):
 class Card(pygame.sprite.Sprite):
     """A class to manage a card."""
 
-
     def __init__(self, suit, value):
         """Initialize the card and set its starting position."""
         super().__init__()
@@ -80,7 +79,6 @@ class Stock(pygame.sprite.Group):
         self.rect.y = self.y
         # self.spacing = 30
         self.rect_color = (128, 128, 128)
-        self.clicked = False
 
     def is_empty(self):
         return len(self.cards) == 0
@@ -116,35 +114,12 @@ class Stock(pygame.sprite.Group):
             # card.rect.y = self.y + self.spacing * i
 
     def draw(self, surface):
-        action = False
-
-        # """Draw all the cards in the stock."""
-        # for card in self.sprites():
-        #     card.draw(surface)
-
         #Check if stock is empty
         if self.is_empty():
             pygame.draw.rect(surface, (0, 128, 0), self.rect)
             pygame.draw.rect(surface, self.rect_color, self.rect, 3)
         else:
             surface.blit(self.cardBack, (self.rect.x, self.rect.y))
-
-        # get mouse position
-        pos = pygame.mouse.get_pos()
-
-        #Check mouseover and clicked conditions
-        if self.rect.collidepoint(pos):
-            pressed_keys = pygame.mouse.get_pressed()
-            if (pressed_keys[0] and self.clicked == False):
-                self.clicked = True
-                action = True
-                print("clicked")
-
-        pressed_keys = pygame.mouse.get_pressed()
-        if (not pressed_keys[0]):
-            self.clicked = False
-
-        return action
 
 class Talon(pygame.sprite.Group):
     """A class to manage the talon."""
@@ -153,8 +128,7 @@ class Talon(pygame.sprite.Group):
         self.cards = []
         self.x = 146
         self.y = 50
-        self.clicked = False
-        self.clicked_card = None
+        self.rect = pygame.Rect(self.x, self.y, CARD_WIDTH, CARD_HEIGHT)
     
     def is_empty(self):
         return len(self.cards) == 0
@@ -163,6 +137,7 @@ class Talon(pygame.sprite.Group):
         card.rect.x = self.x
         card.rect.y = self.y
         self.cards.append(card)
+        super().add(card)
 
     def moveTop(self):
         if self.is_empty():
@@ -177,12 +152,6 @@ class Talon(pygame.sprite.Group):
         super().empty()
         return new_stock
     
-    # def showCard(self):
-    #     if (len(self.cards) > 0):
-    #         return self.cards[-1]
-    #     else:
-    #          return None
-    
     def updateTalon(self):
         """Update the position of all cards in the talon."""
         for i, card in enumerate(self.cards):
@@ -196,81 +165,65 @@ class Talon(pygame.sprite.Group):
         for card in (self.sprites()):
             surface.blit(card.image, card.rect)
 
-            # Check if the card is clicked
-            if self.clicked_card == card:
-                # Move the card to the mouse position
-                mouse_pos = pygame.mouse.get_pos()
-                card.rect.center = mouse_pos
-        
-        # Check if the left mouse button is pressed
-        if pygame.mouse.get_pressed()[0]:
-            # Check if the mouse is over a card in the talon
-            for card in reversed(self.sprites()):
-                if card.rect.collidepoint(pygame.mouse.get_pos()):
-                    self.clicked_card = card
-                    break
-        
-        # Check if the left mouse button is released
-        if not pygame.mouse.get_pressed()[0]:
-            self.clicked_card = None
-            self.updateTalon()
-
-        return self.clicked_card
-        # action = False
-
-        # """Draw all the cards in the talon."""
-        # for card in self.sprites():
-        #     card.draw(surface)
-
-        # get mouse position
-        # pos = pygame.mouse.get_pos()
-
-        # for card in self.sprites():
-
-        #     #Check mouseover and clicked conditions
-        #     if card.rect.collidepoint(pos):
-        #         pressed_keys = pygame.mouse.get_pressed()
-        #         if (pressed_keys[0] and self.clicked == False):
-        #             self.clicked = True
-        #             if self.clicked:
-        #                 card.rect.x = pos[0]-(card.rect.width/2)
-        #                 card.rect.y = pos[1]-(card.rect.width/2)
-        #             # action = True
-        #             print("clicked")
-
-        # pressed_keys = pygame.mouse.get_pressed()
-        # if (not pressed_keys[0]):
-        #     self.clicked = False
-
-        # return action
+class Image:
+    """A class to manage the tablea image."""
+    def __init__(self):
+        self.cardBack = pygame.image.load('images/card_back.png')
+        self.rect = self.cardBack.get_rect()
 
 class Tableau(pygame.sprite.Group):
     """A class to manage the Tableau."""
-    def __init__(self,x,y):
+    def __init__(self,x,y,z):
         super().__init__()
         self.rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
         self.cards = []
         self.x = x
         self.y = y
+        self.z = z
         self.rect_color = (128, 128, 128)
-        self.clicked = False
-        self.clicked_card = None
+        self.spacing = 10
+        self.imageBack =[]
+        self.populateImage()
+
     
     def is_empty(self):
         return len(self.cards) == 0
     
+    def populateImage(self):
+        # Populates the images for a tableau using z
+        if self.z > 0:
+            for i in range(self.z):
+                image = Image()
+                image.rect.x = self.x
+                image.rect.y = self.y + self.spacing * i
+                self.imageBack.append(image)
+    
     def addToTableau(self, card):
-        card.rect.x = self.x
-        card.rect.y = self.y
+        if self.is_empty():
+            card.rect.x = self.x
+            card.rect.y = self.y
+        else:
+            card.rect.x = self.x
+            card.rect.y = self.y + self.spacing * len(self.cards)
+        self.cards.append(card)
+        super().add(card)
+
+    def addBackToTableau(self,card,x,y):
+        card.rect.x = x
+        card.rect.y = y
         self.cards.append(card)
         super().add(card)
 
     def moveTop(self):
         if self.is_empty():
-            return None
+            return None     
         card = self.cards.pop()
         super().remove(card)
         return card
+    
+    def deleteImage(self):
+        if self.imageBack:
+            del self.imageBack[-1]
     
     def can_add_card(self, card):
         
@@ -291,16 +244,17 @@ class Tableau(pygame.sprite.Group):
             else:
                 return False
     
-    def showCard(self):
-        if (len(self.cards) > 0):
-            return self.cards[-1]
-        else:
-             return None
+    # def showCard(self):
+    #     if (len(self.cards) > 0):
+    #         return self.cards[-1]
+    #     else:
+    #          return None
     
     def firstDealTableau(self, deck):
         card = deck.deal()
         card.rect.x = self.x
-        card.rect.y = self.y
+        # card.rect.y = self.y
+        card.rect.y = self.y + self.spacing * len(self.cards)
         self.cards.append(card)
         super().add(card)
 
@@ -313,35 +267,49 @@ class Tableau(pygame.sprite.Group):
 
     def draw(self, surface):
 
-         #Check if stock is empty
+        #Check if the tableau is empty
         if self.is_empty():
             pygame.draw.rect(surface, (0, 128, 0), self.rect)
             pygame.draw.rect(surface, self.rect_color, self.rect, 3)
         else:
-            """Draw all the cards in the talon."""
-            for card in self.sprites():
-                surface.blit(card.image, card.rect)
+            #Check if imageBack is empty
+            if self.imageBack:
+                #Check if imageBack has reduced from its initial length of z
+                if len(self.imageBack) == self.z:
+                    for image in self.imageBack:
+                        surface.blit(image.cardBack, image.rect) 
 
-            # Check if the card is clicked
-            if self.clicked_card == card:
-                # Move the card to the mouse position
-                mouse_pos = pygame.mouse.get_pos()
-                card.rect.center = mouse_pos
-        
-        # Check if the left mouse button is pressed
-        if pygame.mouse.get_pressed()[0]:
-            # Check if the mouse is over a card in the talon
-            for card in reversed(self.sprites()):
-                if card.rect.collidepoint(pygame.mouse.get_pos()):
-                    self.clicked_card = card
-                    break
-        
-        # Check if the left mouse button is released
-        if not pygame.mouse.get_pressed()[0]:
-            self.clicked_card = None
-            self.updateTableau()
+                    #Check if card has been added to the tableau
+                    if len(self.cards) - len(self.imageBack) > 1:
+                        n = len(self.cards) - len(self.imageBack)
 
-        return self.clicked_card
+                        for i in range(-n, 0):               
+                            card = self.sprites()[i]
+                            surface.blit(card.image, card.rect)
+                    
+                    elif len(self.cards) - len(self.imageBack) == 1:
+                         # Get the last card sprite in the talon
+                        last_card = self.sprites()[-1]
+
+                        # Draw the last card sprite on the surface
+                        surface.blit(last_card.image, last_card.rect)
+                        print("Print once")
+
+                # If imageBack has reduced from its initial length of z
+                else:
+                    for image in self.imageBack:
+                        surface.blit(image.cardBack, image.rect) 
+                    
+                    # Get the difference between the cards in the tableau and imageBack i.e the cards not revelaed yet
+                    n = len(self.cards) - len(self.imageBack)
+                    print(n)
+                    for i in range(-n, 0):               
+                        card = self.sprites()[i]
+                        surface.blit(card.image, card.rect)
+            else:
+                """Draw all the cards in the talon."""
+                for card in self.sprites():
+                    surface.blit(card.image, card.rect)           
     
 class Foundation(pygame.sprite.Group):
     """A class to manage the foundation."""
@@ -352,8 +320,6 @@ class Foundation(pygame.sprite.Group):
         self.x = x
         self.y = y
         self.rect_color = (128, 128, 128)
-        self.clicked = False
-        self.clicked_card = None
 
     def is_empty(self):
         return len(self.cards) == 0
@@ -361,6 +327,7 @@ class Foundation(pygame.sprite.Group):
     def addToFoundation(self, card):   
         card.rect.x = self.x
         card.rect.y = self.y
+        # card.rect.y = self.y + self.spacing * i
         self.cards.append(card)
         super().add(card)
          
@@ -415,23 +382,20 @@ class Foundation(pygame.sprite.Group):
             for card in self.sprites():
                 surface.blit(card.image, card.rect)
 
-            # Check if the card is clicked
-            if self.clicked_card == card:
-                # Move the card to the mouse position
-                mouse_pos = pygame.mouse.get_pos()
-                card.rect.center = mouse_pos
-        
-        # Check if the left mouse button is pressed
-        if pygame.mouse.get_pressed()[0]:
-            # Check if the mouse is over a card in the talon
-            for card in reversed(self.sprites()):
-                if card.rect.collidepoint(pygame.mouse.get_pos()):
-                    self.clicked_card = card
-                    break
-        
-        # Check if the left mouse button is released
-        if not pygame.mouse.get_pressed()[0]:
-            self.clicked_card = None
-            self.updateFoundation()
+class MouseObject(pygame.sprite.Group):
+    """This class is used to hold the mouse card sprite data."""
+    def __init__(self):
+        super().__init__()
+        self.rect = pygame.Rect(0, 0, CARD_WIDTH, CARD_HEIGHT)
+        self.card = None
 
-        return self.clicked_card
+    def changeCard(self, card):
+        self.card = card
+
+    def draw(self, surface, mouse_pos):
+        """Update the position of all cards in the stock."""
+        if self.card != None:
+            
+            # Set the position of the card to the mouse position
+            self.rect.center = mouse_pos
+            surface.blit(self.card.image, self.rect)
