@@ -135,10 +135,15 @@ class GameEngine:
                             print("Detect if the card can be placed here.")
                             if tableau.can_add_card(self.clicked_card) == True:
                                 if self.previous_pile in self.tableaus:
-                                    tableau.addToTableau(self.clicked_card)
-                                    self.previous_pile.deleteImage()
-                                    self.clicked_card = None
-                                    print("Card can be placed here.")
+                                    if tableau == self.previous_pile:
+                                        tableau.addToTableau(self.clicked_card)
+                                        self.clicked_card = None
+                                        print("Card can be placed here.")
+                                    else:
+                                        tableau.addToTableau(self.clicked_card)
+                                        self.previous_pile.deleteImage()
+                                        self.clicked_card = None
+                                        print("Card can be placed here.")
                                 else: 
                                     tableau.addToTableau(self.clicked_card)
                                     self.clicked_card = None

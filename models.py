@@ -276,31 +276,40 @@ class Tableau(pygame.sprite.Group):
             if self.imageBack:
                 #Check if imageBack has reduced from its initial length of z
                 if len(self.imageBack) == self.z:
-                    for image in self.imageBack:
-                        surface.blit(image.cardBack, image.rect) 
-
+                    
                     #Check if card has been added to the tableau
-                    if len(self.cards) - len(self.imageBack) > 1:
-                        n = len(self.cards) - len(self.imageBack)
+                    if len(self.sprites()) - len(self.imageBack) > 1:
+                        for image in self.imageBack:
+                            surface.blit(image.cardBack, image.rect) 
+
+                        n = len(self.sprites()) - len(self.imageBack)
 
                         for i in range(-n, 0):               
                             card = self.sprites()[i]
                             surface.blit(card.image, card.rect)
                     
                     elif len(self.cards) - len(self.imageBack) == 1:
+                        for image in self.imageBack:
+                            surface.blit(image.cardBack, image.rect) 
                          # Get the last card sprite in the talon
                         last_card = self.sprites()[-1]
 
                         # Draw the last card sprite on the surface
                         surface.blit(last_card.image, last_card.rect)
-                        print("Print once")
+                        print(last_card.value)
+                    
+                    else:
+                        for image in self.imageBack:
+                            surface.blit(image.cardBack, image.rect) 
 
                 # If imageBack has reduced from its initial length of z
                 else:
                     for image in self.imageBack:
                         surface.blit(image.cardBack, image.rect) 
+                
+                    print("card count", len(self.imageBack))
                     
-                    # Get the difference between the cards in the tableau and imageBack i.e the cards not revelaed yet
+                    # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
                     n = len(self.cards) - len(self.imageBack)
                     print(n)
                     for i in range(-n, 0):               
