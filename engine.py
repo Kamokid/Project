@@ -4,18 +4,16 @@ from models import Deck, Stock, Talon, Foundation, Tableau, MouseObject
 
 class GameEngine:
     """ Game engine to coordinate the interactions between the models """
-    def __init__(self):
-        # Creating the deck and shuffling it.
-        self.deck = Deck()
-        self.deck.shuffle()
-
+    def __init__(self, solitaire):
         # These will be used to keep track of the currently picked card and the pile it came from
         self.clicked_card = None
         self.previous_pile = None
         self.stock_clicked = False # This is needed because the leftclick down is ran in multiple frames
-        self.x = None # Keeps track of its x location
-        self.y = None # Keeps track of its y location
+        self.solitaire = solitaire
 
+        # Creating the deck and shuffling it.
+        self.deck = Deck()
+        self.deck.shuffle() 
         # Creating the stock, talon, foundation and tableaus then dealing the cards
         self.stock = Stock()
         self.talon = Talon()
@@ -33,7 +31,10 @@ class GameEngine:
         self.tableaus.append(Tableau(550,200,5))
         self.tableaus.append(Tableau(650,200,6))
         self.mouse_object = MouseObject()
-        self.deal()
+        self.deal() 
+
+    def RetryClicked(self):      
+        self.solitaire.retry_game()
     
     def deal(self):
         # Dealing all 52 cards
@@ -166,25 +167,3 @@ class GameEngine:
                         self.previous_pile = None 
 
         self.mouse_object.changeCard(self.clicked_card)
-
-
-    def returnCardPile(self, mouse_pos):
-    # Returns the pile of cards where the card was pulled from to be held in the solitaire.py
-        for tableau in self.tableaus:
-            if tableau.rect.collidepoint(mouse_pos):
-                # Hovering over a tableau pile with a card clicked
-                return tableau
-        
-        for foundation in self.foundations:
-            if foundation.rect.collidepoint(mouse_pos):
-                # Hovering over a foundation pile with a card clicked
-                return foundation
-        
-        if self.stock.rect.collidepoint(mouse_pos):
-            return self.stock
-        if self.talon.rect.collidepoint(mouse_pos):
-            return self.talon
-
-        # This is only called if the mouse is hovering over the game background
-        return None
-

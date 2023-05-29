@@ -295,9 +295,7 @@ class Tableau(pygame.sprite.Group):
                         last_card = self.sprites()[-1]
 
                         # Draw the last card sprite on the surface
-                        surface.blit(last_card.image, last_card.rect)
-                        print(last_card.value)
-                    
+                        surface.blit(last_card.image, last_card.rect)          
                     else:
                         for image in self.imageBack:
                             surface.blit(image.cardBack, image.rect) 
@@ -306,12 +304,9 @@ class Tableau(pygame.sprite.Group):
                 else:
                     for image in self.imageBack:
                         surface.blit(image.cardBack, image.rect) 
-                
-                    print("card count", len(self.imageBack))
                     
                     # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
                     n = len(self.cards) - len(self.imageBack)
-                    print(n)
                     for i in range(-n, 0):               
                         card = self.sprites()[i]
                         surface.blit(card.image, card.rect)
