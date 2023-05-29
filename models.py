@@ -74,7 +74,7 @@ class Stock(pygame.sprite.Group):
         self.cards = []
         self.x = 50
         self.y = 50
-        self.rect1 = pygame.Rect(self.x, self.y, CARD_WIDTH, CARD_HEIGHT)
+        # self.rect1 = pygame.Rect(self.x, self.y, CARD_WIDTH, CARD_HEIGHT)
         self.rect.x = self.x
         self.rect.y = self.y
         # self.spacing = 30
@@ -84,7 +84,7 @@ class Stock(pygame.sprite.Group):
         return len(self.cards) == 0
     
     def addToStock(self, card):
-        """Add a card to the tableau and set its position."""
+        """Add a card to the stock and set its position."""
         card.rect.x = self.x
         card.rect.y = self.y 
         # + self.spacing * len(self.cards)
@@ -166,7 +166,7 @@ class Talon(pygame.sprite.Group):
             surface.blit(card.image, card.rect)
 
 class Image:
-    """A class to manage the tablea image."""
+    """A class to manage the tableau image."""
     def __init__(self):
         self.cardBack = pygame.image.load('images/card_back.png')
         self.rect = self.cardBack.get_rect()
@@ -177,11 +177,12 @@ class Tableau(pygame.sprite.Group):
         super().__init__()
         self.rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
         self.cards = []
+        self.rect.height = 103 + (12*z)
         self.x = x
         self.y = y
         self.z = z
         self.rect_color = (128, 128, 128)
-        self.spacing = 10
+        self.spacing = 12
         self.imageBack =[]
         self.populateImage()
 
@@ -205,6 +206,10 @@ class Tableau(pygame.sprite.Group):
         else:
             card.rect.x = self.x
             card.rect.y = self.y + self.spacing * len(self.cards)
+            self.rect.height += 12
+
+        # last_card = self.sprites()[-1]
+        # self.rect.y = last_card.rect.y
         self.cards.append(card)
         super().add(card)
 
@@ -212,12 +217,14 @@ class Tableau(pygame.sprite.Group):
         card.rect.x = x
         card.rect.y = y
         self.cards.append(card)
+        self.rect.height += 12
         super().add(card)
 
     def moveTop(self):
         if self.is_empty():
             return None     
         card = self.cards.pop()
+        self.rect.height -= 12
         super().remove(card)
         return card
     
@@ -291,7 +298,7 @@ class Tableau(pygame.sprite.Group):
                     elif len(self.cards) - len(self.imageBack) == 1:
                         for image in self.imageBack:
                             surface.blit(image.cardBack, image.rect) 
-                         # Get the last card sprite in the talon
+                         # Get the last card sprite in the tableau
                         last_card = self.sprites()[-1]
 
                         # Draw the last card sprite on the surface

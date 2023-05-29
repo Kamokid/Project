@@ -90,7 +90,7 @@ class GameEngine:
                         print("Pick up the tableau card.")
                         break
             for foundation in self.foundations:
-                # Hovering over a foundation deck with the left click up
+                # Hovering over a foundation deck with the left click is pressed
                 if foundation.rect.collidepoint(mouse_pos):
                     if self.clicked_card == None: 
                         print("Pick up the foundation card.")
@@ -133,6 +133,24 @@ class GameEngine:
                     # Hovering over a tableau deck with the left click up
                     if tableau.rect.collidepoint(mouse_pos):
                         # if self.clicked_card != None: 
+                             # Accessing the attributes of the rect object
+                            x = tableau.rect.x
+                            y = tableau.rect.y
+                            width = tableau.rect.width
+                            height = tableau.rect.height
+
+                            # Determine the boundaries
+                            left = x
+                            right = x + width
+                            top = y
+                            bottom = y + height
+
+                            # Print the boundaries
+                            print("Left:", left)
+                            print("Right:", right)
+                            print("Top:", top)
+                            print("Bottom:", bottom)
+                        
                             print("Detect if the card can be placed here.")
                             if tableau.can_add_card(self.clicked_card) == True:
                                 if self.previous_pile in self.tableaus:
