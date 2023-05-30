@@ -17,7 +17,7 @@ class Solitaire:
            
         # Make the most recently drawn screen visible.
             pygame.display.flip()
-            self.clock.tick(60)
+            self.clock.tick(3000)
 
     def retry_game(self):
         GameStartUp(self)

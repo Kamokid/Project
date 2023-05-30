@@ -1,5 +1,6 @@
 from enum import Enum
 import pygame
+import copy
 import random
 
 CARD_WIDTH = 74
@@ -177,6 +178,7 @@ class Tableau(pygame.sprite.Group):
         super().__init__()
         self.rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
         self.cards = []
+        self.cards2 =[]
         self.rect.height = 103 + (12*z)
         self.x = x
         self.y = y
@@ -189,6 +191,9 @@ class Tableau(pygame.sprite.Group):
     
     def is_empty(self):
         return len(self.cards) == 0
+    
+    def is_cards2empty(self):
+        return len(self.cards2) == 0
     
     def populateImage(self):
         # Populates the images for a tableau using z
@@ -208,25 +213,216 @@ class Tableau(pygame.sprite.Group):
             card.rect.y = self.y + self.spacing * len(self.cards)
             self.rect.height += 12
 
-        # last_card = self.sprites()[-1]
-        # self.rect.y = last_card.rect.y
         self.cards.append(card)
         super().add(card)
 
-    def addBackToTableau(self,card,x,y):
-        card.rect.x = x
-        card.rect.y = y
-        self.cards.append(card)
-        self.rect.height += 12
-        super().add(card)
+    # def addBackToTableau(self,card,x,y):
+    #     card.rect.x = x
+    #     card.rect.y = y
+    #     self.cards.append(card)
+    #     self.rect.height += 12
+    #     super().add(card)
 
-    def moveTop(self):
+    def remainingCardsBackToTableau(self):
+
+        if len(self.cards2) == 1:
+            self.deleteImage()
+            self.clearAllCards2()
+
+        elif len(self.cards2) > 1:
+            for card in self.cards2[:-1]:
+                self.cards.append(card)
+                super().add(card)
+                self.rect.height += 12
+                print("/////////")
+                print("Adding Remaining Cards Back")
+                print("Card value:", card.value)
+                print("Card suit:", card.suit.name)
+                # print()
+
+                x = card.rect.x
+                y = card.rect.y
+                width = card.rect.width
+                height = card.rect.height
+
+                                # Determine the boundaries
+                left = x
+                right = x + width
+                top = y
+                bottom = y + height
+
+                                # Print the boundaries
+                print("Left:", left)
+                print("Right:", right)
+                print("Top:", top)
+                print("Bottom:", bottom)   
+            self.clearAllCards2()
+
+        # if len(self.cards) - self.z == 1:
+        #     # Dont delete
+
+        # if len(self.cards) - len(self.imageBack) == 1:
+
+
+        # if len(self.cards) - len(self.imageBack) > 1:  
+
+
+        # if self.imageBack:
+        #         #Check if imageBack has reduced from its initial length of z
+        #         if not len(self.imageBack) == self.z:
+                    
+        #             #Check if card has been added to the tableau
+        #             if len(self.sprites()) - len(self.imageBack) > 1:
+
+        #                 n = len(self.sprites()) - len(self.imageBack)
+
+        #                 for i in range(-n, 0):               
+        #                     self.cards2.append(self.cards[i])
+        #                     super().remove(self.cards[i])
+        #                     self.cards.pop(i)
+
+        #             elif len(self.cards) - len(self.imageBack) == 1:
+
+        #                  # Get the last card sprite in the tableau
+        #                 self.cards2.append(self.cards[-1])
+        #                 super().remove(self.cards[-1])
+        #                 self.cards.pop(-1)
+        
+                 # If imageBack has reduced from its initial length of z
+                # else:
+                #     for image in self.imageBack:
+                #         surface.blit(image.cardBack, image.rect) 
+                    
+                #     # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
+                #     n = len(self.cards) - len(self.imageBack)
+                #     for i in range(-n, 0):               
+                #         card = self.sprites()[i]
+                #         surface.blit(card.image, card.rect)
+
+    def addBackToTableau(self):
+        for card in self.cards2:
+            self.cards.append(card)
+            super().add(card)
+            self.rect.height += 12
+            print("/////////")
+            print("Adding Back")
+            print("Card value:", card.value)
+            print("Card suit:", card.suit.name)
+            # print()
+
+            x = card.rect.x
+            y = card.rect.y
+            width = card.rect.width
+            height = card.rect.height
+
+                            # Determine the boundaries
+            left = x
+            right = x + width
+            top = y
+            bottom = y + height
+
+                            # Print the boundaries
+            print("Left:", left)
+            print("Right:", right)
+            print("Top:", top)
+            print("Bottom:", bottom)   
+        self.clearAllCards2()
+                
+
+    # def moveTop(self):
+    #     if self.is_empty():
+    #         return None     
+    #     card = self.cards.pop()
+    #     self.rect.height -= 12
+    #     super().remove(card)
+    #     return card
+    
+    def moveAdded(self):
         if self.is_empty():
-            return None     
-        card = self.cards.pop()
-        self.rect.height -= 12
-        super().remove(card)
-        return card
+            return [] 
+        else:
+            #Check if imageBack is empty
+            if self.imageBack:
+                #Check if imageBack has reduced from its initial length of z
+                if len(self.imageBack) == self.z:
+                    
+                    #Check if card has been added to the tableau
+                    if len(self.sprites()) - len(self.imageBack) > 1:
+
+                        n = len(self.sprites()) - len(self.imageBack)
+
+                        for i in range(-n, 0):               
+                            self.cards2.append(self.cards[i])
+                            super().remove(self.cards[i])
+                            self.cards.pop(i)
+                            self.rect.height -= 12
+
+                    elif len(self.cards) - len(self.imageBack) == 1:
+
+                         # Get the last card sprite in the tableau
+                        self.cards2.append(self.cards[-1])
+                        super().remove(self.cards[-1])
+                        self.cards.pop(-1)
+                        self.rect.height -= 12
+         
+                    # else:
+                    #     for image in self.imageBack:
+                    #         surface.blit(image.cardBack, image.rect) 
+
+                # If imageBack has reduced from its initial length of z
+                else:
+                    # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
+                    n = len(self.cards) - len(self.imageBack)
+                    for i in range(-n, 0):
+                        self.cards2.append(self.cards[i])
+                        super().remove(self.cards[i])
+                        self.cards.pop(i)
+                        self.rect.height -= 12        
+  
+            else:
+                """Draw all the cards in the talon."""
+                 
+                # length = len(self.cards)
+                # for i in range(length):   
+                #     self.cards2.append(self.cards[i])
+                #     super().remove(self.cards[i])
+                #     self.cards.pop(i)
+                #     self.rect.height = 103
+
+                while  self.cards:
+                    super().remove(self.cards[0])
+                    self.cards2.append(self.cards.pop(0))
+                self.rect.height = 103
+            print("/////////")
+            print("move added")
+            for card in self.cards2:
+                print("Card value:", card.value)
+                print("Card suit:", card.suit.name)
+                # print()
+                   # Accessing the attributes of the rect object
+                x = card.rect.x
+                y = card.rect.y
+                width = card.rect.width
+                height = card.rect.height
+
+                            # Determine the boundaries
+                left = x
+                right = x + width
+                top = y
+                bottom = y + height
+
+                            # Print the boundaries
+                print("Left:", left)
+                print("Right:", right)
+                print("Top:", top)
+                print("Bottom:", bottom)
+                         
+            return  self.cards2
+    
+    def clearAllCards2(self):
+        if self.is_cards2empty():
+            return None
+        self.cards2.clear()
     
     def deleteImage(self):
         if self.imageBack:
@@ -251,16 +447,9 @@ class Tableau(pygame.sprite.Group):
             else:
                 return False
     
-    # def showCard(self):
-    #     if (len(self.cards) > 0):
-    #         return self.cards[-1]
-    #     else:
-    #          return None
-    
     def firstDealTableau(self, deck):
         card = deck.deal()
         card.rect.x = self.x
-        # card.rect.y = self.y
         card.rect.y = self.y + self.spacing * len(self.cards)
         self.cards.append(card)
         super().add(card)
@@ -338,7 +527,6 @@ class Foundation(pygame.sprite.Group):
     def addToFoundation(self, card):   
         card.rect.x = self.x
         card.rect.y = self.y
-        # card.rect.y = self.y + self.spacing * i
         self.cards.append(card)
         super().add(card)
          
@@ -349,12 +537,6 @@ class Foundation(pygame.sprite.Group):
         card = self.cards.pop()
         super().remove(card)
         return card
-    
-    # def showCard(self):
-    #     if (len(self.cards) > 0):
-    #         return self.cards[-1]
-    #     else:
-    #          return None
 
     def can_add_card(self, card):
         
@@ -397,16 +579,37 @@ class MouseObject(pygame.sprite.Group):
     """This class is used to hold the mouse card sprite data."""
     def __init__(self):
         super().__init__()
-        self.rect = pygame.Rect(0, 0, CARD_WIDTH, CARD_HEIGHT)
-        self.card = None
+        self.rect = pygame.Rect(50, 65, CARD_WIDTH, CARD_HEIGHT)
+        self.cards = []
+        self.offset = 10
+        self.spacing = 10
 
-    def changeCard(self, card):
-        self.card = card
+    def draggedCards(self, cards2):
+        for card in cards2:
+            card.rect.y = card.rect.y + self.spacing * len(self.cards)
+            self.cards.append(card)
+
+    def draggedCard(self, card):
+        self.cards.append(card)
+
+    def is_empty(self):
+        return len(self.cards) == 0
+    
+    def clearAll(self):
+        if self.is_empty():
+            return None
+        self.cards.clear()
 
     def draw(self, surface, mouse_pos):
-        """Update the position of all cards in the stock."""
-        if self.card != None:
+        # """Update the position of all cards in the stock."""
+        # if self.card != None:
             
-            # Set the position of the card to the mouse position
-            self.rect.center = mouse_pos
-            surface.blit(self.card.image, self.rect)
+        #     # Set the position of the card to the mouse position
+        #     self.rect.center = mouse_pos
+        #     surface.blit(self.card.image, self.rect)
+        
+        if not self.is_empty():
+        # Code for drawing the cards at the mouse position
+            for i, card in enumerate(self.cards):
+                    card.rect.center = mouse_pos
+                    surface.blit(card.image, card.rect)
