@@ -179,15 +179,15 @@ class Tableau(pygame.sprite.Group):
         self.rect = pygame.Rect(x, y, CARD_WIDTH, CARD_HEIGHT)
         self.cards = []
         self.cards2 =[]
+        self.cards2Count = 0 
         self.rect.height = 103 + (12*z)
         self.x = x
         self.y = y
         self.z = z
         self.rect_color = (128, 128, 128)
-        self.spacing = 12
+        self.spacing = 15
         self.imageBack =[]
         self.populateImage()
-
     
     def is_empty(self):
         return len(self.cards) == 0
@@ -216,126 +216,75 @@ class Tableau(pygame.sprite.Group):
         self.cards.append(card)
         super().add(card)
 
-    # def addBackToTableau(self,card,x,y):
-    #     card.rect.x = x
-    #     card.rect.y = y
-    #     self.cards.append(card)
-    #     self.rect.height += 12
-    #     super().add(card)
+    def addBackToTableau(self,card):
 
-    def remainingCardsBackToTableau(self):
+        self.cards.append(card)
+        self.rect.height += 12
+        super().add(card)
 
-        if len(self.cards2) == 1:
-            self.deleteImage()
-            self.clearAllCards2()
+    # def remainingCardsBackToTableau(self):
 
-        elif len(self.cards2) > 1:
-            for card in self.cards2[:-1]:
-                self.cards.append(card)
-                super().add(card)
-                self.rect.height += 12
-                print("/////////")
-                print("Adding Remaining Cards Back")
-                print("Card value:", card.value)
-                print("Card suit:", card.suit.name)
-                # print()
+    #     if self.cards2Count == 1:
+    #         self.deleteImage()
+    #         self.clearAllCards2()
 
-                x = card.rect.x
-                y = card.rect.y
-                width = card.rect.width
-                height = card.rect.height
+    #     elif len(self.cards2Count) > 1:
+    #         for card in self.cards2[:-1]:
+    #             self.cards.append(card)
+    #             super().add(card)
+    #             self.rect.height += 12
+    #             print("/////////")
+    #             print("Adding Remaining Cards Back")
+    #             print("Card value:", card.value)
+    #             print("Card suit:", card.suit.name)
+    #             # print()
 
-                                # Determine the boundaries
-                left = x
-                right = x + width
-                top = y
-                bottom = y + height
+    #             x = card.rect.x
+    #             y = card.rect.y
+    #             width = card.rect.width
+    #             height = card.rect.height
 
-                                # Print the boundaries
-                print("Left:", left)
-                print("Right:", right)
-                print("Top:", top)
-                print("Bottom:", bottom)   
-            self.clearAllCards2()
+    #                             # Determine the boundaries
+    #             left = x
+    #             right = x + width
+    #             top = y
+    #             bottom = y + height
 
-        # if len(self.cards) - self.z == 1:
-        #     # Dont delete
+    #                             # Print the boundaries
+    #             print("Left:", left)
+    #             print("Right:", right)
+    #             print("Top:", top)
+    #             print("Bottom:", bottom)   
+    #         self.clearAllCards2()
 
-        # if len(self.cards) - len(self.imageBack) == 1:
+    # def addBackToTableauX(self):
+    #     for card in self.cards2:
+    #         self.cards.append(card)
+    #         super().add(card)
+    #         self.rect.height += 12
+    #         print("/////////")
+    #         print("Adding Back")
+    #         print("Card value:", card.value)
+    #         print("Card suit:", card.suit.name)
+    #         # print()
 
+    #         x = card.rect.x
+    #         y = card.rect.y
+    #         width = card.rect.width
+    #         height = card.rect.height
 
-        # if len(self.cards) - len(self.imageBack) > 1:  
+    #                         # Determine the boundaries
+    #         left = x
+    #         right = x + width
+    #         top = y
+    #         bottom = y + height
 
-
-        # if self.imageBack:
-        #         #Check if imageBack has reduced from its initial length of z
-        #         if not len(self.imageBack) == self.z:
-                    
-        #             #Check if card has been added to the tableau
-        #             if len(self.sprites()) - len(self.imageBack) > 1:
-
-        #                 n = len(self.sprites()) - len(self.imageBack)
-
-        #                 for i in range(-n, 0):               
-        #                     self.cards2.append(self.cards[i])
-        #                     super().remove(self.cards[i])
-        #                     self.cards.pop(i)
-
-        #             elif len(self.cards) - len(self.imageBack) == 1:
-
-        #                  # Get the last card sprite in the tableau
-        #                 self.cards2.append(self.cards[-1])
-        #                 super().remove(self.cards[-1])
-        #                 self.cards.pop(-1)
-        
-                 # If imageBack has reduced from its initial length of z
-                # else:
-                #     for image in self.imageBack:
-                #         surface.blit(image.cardBack, image.rect) 
-                    
-                #     # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
-                #     n = len(self.cards) - len(self.imageBack)
-                #     for i in range(-n, 0):               
-                #         card = self.sprites()[i]
-                #         surface.blit(card.image, card.rect)
-
-    def addBackToTableau(self):
-        for card in self.cards2:
-            self.cards.append(card)
-            super().add(card)
-            self.rect.height += 12
-            print("/////////")
-            print("Adding Back")
-            print("Card value:", card.value)
-            print("Card suit:", card.suit.name)
-            # print()
-
-            x = card.rect.x
-            y = card.rect.y
-            width = card.rect.width
-            height = card.rect.height
-
-                            # Determine the boundaries
-            left = x
-            right = x + width
-            top = y
-            bottom = y + height
-
-                            # Print the boundaries
-            print("Left:", left)
-            print("Right:", right)
-            print("Top:", top)
-            print("Bottom:", bottom)   
-        self.clearAllCards2()
-                
-
-    # def moveTop(self):
-    #     if self.is_empty():
-    #         return None     
-    #     card = self.cards.pop()
-    #     self.rect.height -= 12
-    #     super().remove(card)
-    #     return card
+    #                         # Print the boundaries
+    #         print("Left:", left)
+    #         print("Right:", right)
+    #         print("Top:", top)
+    #         print("Bottom:", bottom)   
+    #     self.clearAllCards2()
     
     def moveAdded(self):
         if self.is_empty():
@@ -365,10 +314,6 @@ class Tableau(pygame.sprite.Group):
                         self.cards.pop(-1)
                         self.rect.height -= 12
          
-                    # else:
-                    #     for image in self.imageBack:
-                    #         surface.blit(image.cardBack, image.rect) 
-
                 # If imageBack has reduced from its initial length of z
                 else:
                     # Get the difference between the cards in the tableau and imageBack i.e the cards not revealed yet
@@ -381,42 +326,37 @@ class Tableau(pygame.sprite.Group):
   
             else:
                 """Draw all the cards in the talon."""
-                 
-                # length = len(self.cards)
-                # for i in range(length):   
-                #     self.cards2.append(self.cards[i])
-                #     super().remove(self.cards[i])
-                #     self.cards.pop(i)
-                #     self.rect.height = 103
 
                 while  self.cards:
                     super().remove(self.cards[0])
                     self.cards2.append(self.cards.pop(0))
                 self.rect.height = 103
-            print("/////////")
-            print("move added")
-            for card in self.cards2:
-                print("Card value:", card.value)
-                print("Card suit:", card.suit.name)
-                # print()
-                   # Accessing the attributes of the rect object
-                x = card.rect.x
-                y = card.rect.y
-                width = card.rect.width
-                height = card.rect.height
 
-                            # Determine the boundaries
-                left = x
-                right = x + width
-                top = y
-                bottom = y + height
+            # print("/////////")
+            # print("move added")
+            # for card in self.cards2:
+            #     print("Card value:", card.value)
+            #     print("Card suit:", card.suit.name)
+            #     # print()
+            #        # Accessing the attributes of the rect object
+            #     x = card.rect.x
+            #     y = card.rect.y
+            #     width = card.rect.width
+            #     height = card.rect.height
 
-                            # Print the boundaries
-                print("Left:", left)
-                print("Right:", right)
-                print("Top:", top)
-                print("Bottom:", bottom)
-                         
+            #                 # Determine the boundaries
+            #     left = x
+            #     right = x + width
+            #     top = y
+            #     bottom = y + height
+
+            #                 # Print the boundaries
+            #     print("Left:", left)
+            #     print("Right:", right)
+            #     print("Top:", top)
+            #     print("Bottom:", bottom)
+
+            self.cards2Count = len(self.cards2)         
             return  self.cards2
     
     def clearAllCards2(self):

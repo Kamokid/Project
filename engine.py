@@ -85,50 +85,75 @@ class GameEngine:
             # Detecting if player is hovering over a TABLEAU pile while the left click is pressed.
             for tableau in self.tableaus:
                 if tableau.rect.collidepoint(mouse_pos):
-
-                    if not self.clicked_cards and self.clicked_card is None:
-                        print(not self.clicked_cards and self.clicked_card is None)
-                        # for card in tableau:
+                    
+                    #Check if the mouse is holding a card
+                    if not self.filtered_card_list and self.clicked_card is None:
+                        
                         self.previous_pile = tableau
+
+                        #Return a list of the cards that are visible in a particular array
                         self.clicked_cards = tableau.moveAdded()
-                        for card in self.clicked_cards:
-                            self.cardloc.append((card.rect.x, card.rect.y))
-                            print("/////////")
-                            print("Before moving")
-                            print("Card value:", card.value)
-                            print("Card suit:", card.suit.name)
-                            # Accessing the attributes of the rect object
-                            x = card.rect.x
-                            y = card.rect.y
-                            width = card.rect.width
-                            height = card.rect.height
-
-                                        # Determine the boundaries
-                            left = x
-                            right = x + width
-                            top = y
-                            bottom = y + height
-
-                                        # Print the boundaries
-                            print("Left:", left)
-                            print("Right:", right)
-                            print("Top:", top)
-                            print("Bottom:", bottom)
-                        # self.clicked_cardsholder = copy.deepcopy(self.clicked_cards)
+                        
+                        #Check if only one card was returned from the tableau
                         if(len(self.clicked_cards) == 1):
-                            self.filtered_card_list.append(self.clicked_cards[0])                                  
+
+                            #Append that card to the local list that will then be passed on to the cursor
+                            self.filtered_card_list.append(self.clicked_cards[0])
+                        #Check if more than one card was returned from the tableau                                      
                         elif(len(self.clicked_cards) > 1):
-                            # collision_occurred = False  # Flag to check if collision occurred
-                            # Iterate over the rects and check for collision
-                            for card in self.clicked_cards:
-                                # if card.rect.collidepoint(mouse_pos):
-                                #     collision_occurred = True  # Collision occurred with the current rect
-                                # if collision_occurred:
-                                    self.filtered_card_list.append(card)                         
-                            # self.clicked_card = tableau.moveTop()
-                            # self.x = self.clicked_card.rect.x
-                            # self.y = self.clicked_card.rect.y
-                            # self.clicked_card.rect.center = mouse_pos 
+                            for i, card in enumerate(self.clicked_cards):
+                                if i == 0:
+                                    #Capture the Y position of the first card
+                                    first_rect_y = card.rect.y
+                                #Check if the Y position of this card collides with the  mouse    
+                                if mouse_pos[1] >= first_rect_y and mouse_pos[1] < (first_rect_y + 15):
+
+                                    #Add the card that collides with the mouse as well as all cards after it to the local list of cards
+                                    self.filtered_card_list.extend(self.clicked_cards[i:])
+
+                                    #Clear the array that was holding all the cards returned from the tableau
+                                    self.clicked_cards.clear()
+                                    break
+                                
+                                #Check if this is the last card and it was clicked without onlya lower bound for the y-position
+                                if self.clicked_cards[i] == self.clicked_cards[-1] and  mouse_pos[1] >= first_rect_y:
+
+                                    #Append only the last card in the tableau tp the local list of cards
+                                    self.filtered_card_list.append(self.clicked_cards[i])
+
+                                    #Clear the array that was holding all the cards returned from the tableau
+                                    self.clicked_cards.clear()
+                                    break
+
+                                #Return the card that didnt collide with the mouse point to its previous tableau
+                                tableau.addBackToTableau(self.clicked_cards[i])
+
+                                #Increment the y-position to be used in the collide condition
+                                first_rect_y += 15
+
+                        # for card in self.filtered_card_list:
+                        #     self.cardloc.append((card.rect.x, card.rect.y))
+                        #     print("/////////")
+                        #     print("Before moving")
+                        #     print("Card value:", card.value)
+                        #     print("Card suit:", card.suit.name)
+                        #     # Accessing the attributes of the rect object
+                        #     x = card.rect.x
+                        #     y = card.rect.y
+                        #     width = card.rect.width
+                        #     height = card.rect.height
+
+                        #                 # Determine the boundaries
+                        #     left = x
+                        #     right = x + width
+                        #     top = y
+                        #     bottom = y + height
+
+                        #                 # Print the boundaries
+                        #     print("Left:", left)
+                        #     print("Right:", right)
+                        #     print("Top:", top)
+                        #     print("Bottom:", bottom)
                             
                             print("Pick up the tableau card.")
                     break
@@ -140,76 +165,79 @@ class GameEngine:
                         self.clicked_card = foundation.moveTop()
                         self.clicked_card.rect.center = mouse_pos 
                         self.previous_pile = foundation
-                        break                              
+                        break       
+
             # Player is hovering over the STOCK pile while the left click is pressed.
             if self.stock.rect.collidepoint(mouse_pos):
                 if self.clicked_card == None and self.stock_clicked == False:
                      self.addToTalon()
                      self.stock_clicked = True
                      print("Move stock card to talon top of pile")
-                    #  print(self.stock.popTop().value)
+
             # Player is hovering over the TALON pile while the left click is pressed.
             if self.talon.rect.collidepoint(mouse_pos):
                 if not self.filtered_card_list and self.clicked_card is None:
                      self.clicked_card = self.talon.moveTop()
                      self.clicked_card.rect.center = mouse_pos 
                      self.previous_pile = self.talon
-                     print("Picking up a card from the talon pile")                      
-        elif(click_down == False): # Left click NOT pressed 
+                     print("Picking up a card from the talon pile")    
+
+        elif(click_down == False): # Left click no longer being pressed 
             self.stock_clicked = False
+
+            #Check if the mouse is holding a card. The card is either from a talon or a foundation
             if(self.clicked_card is not None):
                 for foundation in self.foundations:
                     # Hovering over a foundation deck with the left click up
                     if foundation.rect.collidepoint(mouse_pos):
-                            print("Detect if the card can be placed here.")
+                            print("Detect if the card can be placed in foundation.")
                             if foundation.can_add_card(self.clicked_card) == True:
                                     foundation.addToFoundation(self.clicked_card)
-                                    self.mouse_object.clearAll()
-                                    self.clicked_card = None
+                                    self.reset()
                             break
+                    
                 for tableau in self.tableaus:
                     # Hovering over a tableau deck with the left click up
                     if tableau.rect.collidepoint(mouse_pos):
-                            print("Detect if the card can be placed here.")
+                            print("Detect if the card can be placed in tableau.")
                             if tableau.can_add_card(self.clicked_card) == True:
                                     tableau.addToTableau(self.clicked_card)
-                                    self.mouse_object.clearAll()
-                                    self.clicked_card = None
+                                    self.reset()
                             break        
+            
+            #Check if the mouse is holding a card or cards. The card(s) is/are from a tableau
             elif(self.filtered_card_list):
                 for foundation in self.foundations:
                     # Hovering over a foundation deck with the left click up
                     if foundation.rect.collidepoint(mouse_pos):
                         # if self.clicked_card != None: 
                             print("Detect if the card can be placed here.")
-                            if foundation.can_add_card(self.filtered_card_list[-1]) == True:
-                                # for card in self.filtered_card_list: 
-                                self.resetXY()
-                                foundation.addToFoundation(self.filtered_card_list[-1])
-                                self.previous_pile.remainingCardsBackToTableau()
-                                self.reset()
-                                self.previous_pile.clearAllCards2()
-                                self.previous_pile = None
+                            if len(self.filtered_card_list) == 1:  
+                                if foundation.can_add_card(self.filtered_card_list[0]) == True:
+                                    foundation.addToFoundation(self.filtered_card_list[0])
+                                # self.previous_pile.remainingCardsBackToTableau()
+                                    self.reset()
+                                    self.previous_pile.deleteImage()
+                                    self.previous_pile.clearAllCards2()
+                                    self.previous_pile = None
                             break
                 for tableau in self.tableaus:
                     # Hovering over a tableau deck with the left click up
                     if tableau.rect.collidepoint(mouse_pos):
-                        
                             print("Detect if the card can be placed here.")
-                            if tableau.can_add_card(self.filtered_card_list[0]) == True:
-                                    # if tableau == self.previous_pile:
-                                    #     tableau.addToTableau(self.clicked_card)
-                                    #     self.mouse_object.clearAll()
-                                    #     self.clicked_card = None
-                                    #     print("Card can be placed here.")
-                                    # else:
-                                for card in self.filtered_card_list: 
-                                    tableau.addToTableau(card)
-                                self.reset()
-                                self.previous_pile.deleteImage()
-                                self.previous_pile.clearAllCards2()
-                                self.previous_pile = None
-                                print("Card can be placed here.")
+                            if not tableau == self.previous_pile:                       
+                                if tableau.can_add_card(self.filtered_card_list[0]) == True:
+                                    for card in self.filtered_card_list: 
+                                        tableau.addToTableau(card)
+                                    self.reset()
+                                    
+                                    #Delete an image in the tableau
+                                    self.previous_pile.deleteImage()
+
+                                    #Clear the list in tableau that holds the cards returned from tableau
+                                    self.previous_pile.clearAllCards2()
+                                    self.previous_pile = None
+                                    print("Card can be placed here.")
                             break
             if(self.clicked_card is not None or self.filtered_card_list):
                     # The card was let go so it will go back to the previous pile.
@@ -220,36 +248,39 @@ class GameEngine:
                             self.previous_pile.addToTalon(self.clicked_card)
                             self.mouse_object.clearAll()
                         elif self.previous_pile in self.tableaus:
-                            print("/////////")
-                            print("Card Back to tableau")
+                            
                             self.resetXY()
 
-                            for card in self.previous_pile.cards2:
+                            # print("/////////")
+                            # print("Card Back to tableau")
+                            # for card in self.filtered_card_list:
 
-                                print("Card value:", card.value)
-                                print("Card suit:", card.suit.name)
-                                # print()
-                                # Accessing the attributes of the rect object
-                                x = card.rect.x
-                                y = card.rect.y
-                                width = card.rect.width
-                                height = card.rect.height
+                            #     print("Card value:", card.value)
+                            #     print("Card suit:", card.suit.name)
+                            #     # print()
+                            #     # Accessing the attributes of the rect object
+                            #     x = card.rect.x
+                            #     y = card.rect.y
+                            #     width = card.rect.width
+                            #     height = card.rect.height
 
-                                            # Determine the boundaries
-                                left = x
-                                right = x + width
-                                top = y
-                                bottom = y + height
+                            #                 # Determine the boundaries
+                            #     left = x
+                            #     right = x + width
+                            #     top = y
+                            #     bottom = y + height
 
-                                            # Print the boundaries
-                                print("Left:", left)
-                                print("Right:", right)
-                                print("Top:", top)
-                                print("Bottom:", bottom)
+                            #                 # Print the boundaries
+                            #     print("Left:", left)
+                            #     print("Right:", right)
+                            #     print("Top:", top)
+                            #     print("Bottom:", bottom)
     
-                            self.previous_pile.addBackToTableau()
+                            for card in self.filtered_card_list: 
+                                self.previous_pile.addBackToTableau(card)
+                            self.previous_pile.clearAllCards2()
                             self.reset()
-                            print("done")
+
                         else:
                             self.previous_pile.addToFoundation(self.clicked_card)
                             self.mouse_object.clearAll()
@@ -274,29 +305,5 @@ class GameEngine:
         self.mouse_object.clearAll()
         self.filtered_card_list.clear()
         self.clicked_cards.clear()
+        self.clicked_card = None
         self.cardloc.clear()
-
-                            # for card in self.previous_pile.cards2:
-
-                            #     print("Card value:", card.value)
-                            #     print("Card suit:", card.suit.name)
-                            #     # print()
-                            #     # Accessing the attributes of the rect object
-                            #     x = card.rect.x
-                            #     y = card.rect.y
-                            #     width = card.rect.width
-                            #     height = card.rect.height
-
-                            #                 # Determine the boundaries
-                            #     left = x
-                            #     right = x + width
-                            #     top = y
-                            #     bottom = y + height
-
-                            #                 # Print the boundaries
-                            #     print("Left:", left)
-                            #     print("Right:", right)
-                            #     print("Top:", top)
-                            #     print("Bottom:", bottom)
-                            
-                            
